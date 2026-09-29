@@ -408,6 +408,20 @@ def modify_model_for_custom(model: nn.Module, num_sources: int = 4
     return model
 
 
+def _module_device(module: nn.Module) -> torch.device:
+    """
+    Устройство, на котором реально лежат веса модуля.
+
+    Нужно, чтобы тестовые прогонялки создавали входные данные ТАМ ЖЕ, где
+    модель, а не там, где оказался default device. На машине без видеокарты
+    это незаметно, а на GPU падает с невнятной ошибкой про несовпадение
+    устройств.
+    """
+    for tensor in list(module.parameters()) + list(module.buffers()):
+        return tensor.device
+    return torch.device("cpu")
+
+
 def _check_model_output(model: nn.Module, num_sources: int,
                         audio_channels: int) -> None:
     """
@@ -428,7 +442,13 @@ def _check_model_output(model: nn.Module, num_sources: int,
     try:
         with torch.no_grad():
             for index, net in enumerate(nets):
-                out = net(torch.zeros(1, audio_channels, length))
+                # Устройство берём у самой сети, а не задаём по умолчанию.
+                # Иначе на GPU тест кормит свёртку тензором с CPU и падает с
+                # "Input type (torch.FloatTensor) and weight type
+                #  (torch.cuda.FloatTensor) should be the same" - причём
+                # задолго до начала обучения, на самой сборке модели.
+                device = _module_device(net)
+                out = net(torch.zeros(1, audio_channels, length, device=device))
                 got = tuple(out.shape)
                 want = (1, num_sources, audio_channels, length)
                 if got != want:
