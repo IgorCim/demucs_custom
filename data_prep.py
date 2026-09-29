@@ -26,8 +26,8 @@ demucs_custom / data_prep.py
 
 ЧТО ВОЗВРАЩАЕТ ОДИН ЭЛЕМЕНТ ДАТАСЕТА (это важно):
     {
-        "mixture": (2, 480000)          - что подаём на вход модели
-        "sources": (4, 2, 480000)      - "правильный ответ" в порядке
+        "mixture": (2, 343980)          - что подаём на вход модели
+        "sources": (4, 2, 343980)      - "правильный ответ" в порядке
                                           [vocals, drums, bass, other]
     }
 
@@ -384,7 +384,9 @@ class CustomDataset(Dataset):
         self,
         root_dir: str,
         split: str = "train",
-        segment_length: int = 480000,
+        # 343980 = 7.8 сек, предел pretrained htdemucs (см. config.py).
+        # Больше сеть не примет: ValueError про training length.
+        segment_length: int = 343980,
         sample_rate: int = 44100,
         sources: Optional[Sequence[str]] = None,
         check_mixture: bool = False,
@@ -698,7 +700,9 @@ def get_custom_loaders(
     """
     root = Path(getattr(config, "custom_data_path_abs")
                 or Path(getattr(config, "custom_data_path")).resolve())
-    segment_length = int(segment_length or getattr(config, "segment_length", 480000))
+    # Запасной дефолт на случай, если у конфига нет segment_length.
+    # Держим 343980, а не 480000: см. подробности в config.py.
+    segment_length = int(segment_length or getattr(config, "segment_length", 343980))
     sample_rate = int(sample_rate or getattr(config, "sample_rate", 44100))
     batch_size = int(getattr(config, "batch_size", 8))
     workers = int(getattr(config, "num_workers", 0) if num_workers is None else num_workers)

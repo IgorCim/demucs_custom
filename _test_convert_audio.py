@@ -174,8 +174,8 @@ ds = CustomDataset(root_dir=str(TMP / "dataset"), split="train", verbose=False)
 item = ds[0]
 diff = float((item["mixture"] - item["sources"].sum(dim=0)).abs().max())
 check("CustomDataset читает результат конвертации",
-      tuple(item["mixture"].shape) == (2, 480000)
-      and tuple(item["sources"].shape) == (4, 2, 480000),
+      tuple(item["mixture"].shape) == (2, 343980)
+      and tuple(item["sources"].shape) == (4, 2, 343980),
       f"mixture {tuple(item['mixture'].shape)}, sources {tuple(item['sources'].shape)}")
 check("mixture равна сумме дорожек и после конвертации", diff < 0.01,
       f"расхождение {diff:.5f} (допуск 0.01)")
