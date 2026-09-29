@@ -1,0 +1,88 @@
+# demucs_custom — что НЕ нужно хранить в репозитории / архиве
+# ---------------------------------------------------------------------------
+
+# Скомпилированный Python-код (создаётся сам при запуске)
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Виртуальное окружение
+venv/
+.venv/
+env/
+
+# Наша обученная модель — весит сотни мегабайт.
+# В репозиторий её класть нельзя, воспроизводится обучением.
+models/*.pth
+models/*.pt
+models/*.ckpt
+
+# Логи (создаются автоматически)
+logs/*.log
+logs/*.log.*
+
+# Результаты разделения песен
+output/
+!output/.gitkeep
+
+# Данные (могут быть лицензионными и большими)
+custom_dataset/*
+!custom_dataset/.gitkeep
+
+# Секреты: токен бота, ключи API
+.env
+.env.*
+secrets.json
+
+# Системный мусор
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Виртуальные окружения
+venv/
+env/
+.venv/
+
+# Модели (СЛИШКОМ БОЛЬШИЕ для GitHub)
+models/*.pth
+models/*.pt
+models/*.onnx
+!models/.gitkeep
+
+# Данные (не загружаем)
+custom_dataset/
+
+# Временные файлы
+output/
+temp/
+logs/
+*.log
+
+# Секреты
+.env
+.env.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# macOS
+.DS_Store
+Thumbs.db
+
+# Чекпоинты
+checkpoint.pt
+checkpoint_*.pt
